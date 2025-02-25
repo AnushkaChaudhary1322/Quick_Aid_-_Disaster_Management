@@ -12,7 +12,6 @@ import planRoutes from "./routes/planRoute.js";
 import incidentRoutes from "./routes/incidentRoute.js";
 import alertRoutes from "./routes/alertRoute.js";
 import postRoutes from "./routes/postRoute.js";
-// import stripeRoutes from "./routes/stripeRoute.js";
 import supplyRoutes from "./routes/donationRoute.js";
 import hospitalRoutes from "./routes/hospitalRoute.js";
 import responerRoutes from "./routes/responderRoute.js";
@@ -39,13 +38,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Configure CORS properly for frontend with credentials
+// CORS for frontend with credentials
 app.use(
   cors({
-    origin: "http://localhost:5173", // The frontend URL
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: "Content-Type, Authorization", // You can include other headers as necessary
-    credentials: true, // This allows cookies to be sent with the request
+    allowedHeaders: "Content-Type, Authorization", 
+    credentials: true, 
   })
 );
 
@@ -64,13 +63,10 @@ app.use("/api/plans", planRoutes);
 app.use("/api/incident", incidentRoutes);
 app.use("/api/alerts", alertRoutes);
 app.use("/api/threads", postRoutes);
-// app.use("/api/stripe", stripeRoutes);
 app.use("/api/donations", supplyRoutes);
 app.use("/api/hospital", hospitalRoutes);
 app.use("/api/responder", responerRoutes);
 app.use("/api/money-donations", moneyDonationRoutes);
-
-// New route to send Razorpay key to frontend
 app.use("/api/razorpay", razorpayRoutes); 
 
 io.on("connection", (socket) => {
