@@ -36,9 +36,6 @@ const PlanSchema = new mongoose.Schema(
         email: String,
       },
     ],
-    evacuationPlan: {
-      type: mongoose.Schema.Types.Mixed,
-    },
     medicalInformation: {
       type: mongoose.Schema.Types.Mixed,
     },

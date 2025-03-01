@@ -5,7 +5,6 @@ export const createEmergencyPlan = async (req, res, next) => {
     const {
       familyMembers,
       emergencyContacts,
-      evacuationPlan,
       medicalInformation,
       notes,
     } = req.body;
@@ -18,7 +17,6 @@ export const createEmergencyPlan = async (req, res, next) => {
       user: userId,
       familyMembers,
       emergencyContacts,
-      evacuationPlan,
       medicalInformation,
       notes,
       createdBy,
@@ -49,7 +47,6 @@ export const updateEmergencyPlanById = async (req, res, next) => {
     const {
       familyMembers,
       emergencyContacts,
-      evacuationPlan,
       medicalInformation,
       notes,
     } = req.body;
@@ -66,7 +63,6 @@ export const updateEmergencyPlanById = async (req, res, next) => {
     }
     existingPlan.familyMembers = familyMembers;
     existingPlan.emergencyContacts = emergencyContacts;
-    existingPlan.evacuationPlan = evacuationPlan;
     existingPlan.medicalInformation = medicalInformation;
     existingPlan.notes = notes;
     const updatedPlan = await existingPlan.save();
