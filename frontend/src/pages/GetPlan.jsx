@@ -107,21 +107,7 @@ const GetPlan = () => {
                   </ul>
                 </div>
               </div>
-              {/* Evacuation Plan */}
-              <div>
-                <p className="font-semibold text-lg">Evacuation Plan:</p>
-                <p>
-                  <strong>Type:</strong> {plan.evacuationPlan.type}
-                </p>
-                <p>
-                  <strong>Evacuation Routes:</strong>{" "}
-                  {plan.evacuationPlan.evacuationRoutes.join(", ")}
-                </p>
-                <p>
-                  <strong>Meeting Points:</strong>{" "}
-                  {plan.evacuationPlan.meetingPoints.join(", ")}
-                </p>
-              </div>
+
               {/* Medical Information */}
               <div>
                 <p className="font-semibold text-lg">Medical Information:</p>

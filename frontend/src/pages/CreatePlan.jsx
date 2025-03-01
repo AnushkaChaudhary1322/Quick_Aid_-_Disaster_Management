@@ -39,11 +39,6 @@ const CreatePlan = () => {
         email: "",
       },
     ],
-    evacuationPlan: {
-      type: "Evacuation Plan",
-      evacuationRoutes: ["", ""],
-      meetingPoints: ["", ""],
-    },
     medicalInformation: {
       type: "Medical Information",
       allergies: [""],
@@ -81,33 +76,7 @@ const CreatePlan = () => {
     }));
   };
 
-  const handleEvacuationRouteChange = (index, value) => {
-    setFormData((prevData) => {
-      const newRoutes = [...prevData.evacuationPlan.evacuationRoutes];
-      newRoutes[index] = value;
-      return {
-        ...prevData,
-        evacuationPlan: {
-          ...prevData.evacuationPlan,
-          evacuationRoutes: newRoutes,
-        },
-      };
-    });
-  };
 
-  const handleMeetingPointChange = (index, value) => {
-    setFormData((prevData) => {
-      const newPoints = [...prevData.evacuationPlan.meetingPoints];
-      newPoints[index] = value;
-      return {
-        ...prevData,
-        evacuationPlan: {
-          ...prevData.evacuationPlan,
-          meetingPoints: newPoints,
-        },
-      };
-    });
-  };
 
   const handleMedicalChange = (index, field, value) => {
     setFormData((prevData) => {
@@ -272,66 +241,6 @@ const CreatePlan = () => {
                 />
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Evacuation Plan */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Evacuation Plan</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <div>
-              <Label htmlFor="evacuationType">Evacuation Type</Label>
-              <TextInput
-                type="text"
-                id="evacuationType"
-                name="evacuationType"
-                value={formData.evacuationPlan.type}
-                onChange={(e) => handleEvacuationChange("type", e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="evacuationRoute1">Evacuation Route 1</Label>
-              <TextInput
-                type="text"
-                id="evacuationRoute1"
-                name="evacuationRoute1"
-                value={formData.evacuationPlan.evacuationRoutes[0]}
-                onChange={(e) => handleEvacuationRouteChange(0, e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="evacuationRoute2">Evacuation Route 2</Label>
-              <TextInput
-                type="text"
-                id="evacuationRoute2"
-                name="evacuationRoute2"
-                value={formData.evacuationPlan.evacuationRoutes[1]}
-                onChange={(e) => handleEvacuationRouteChange(1, e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="meetingPoint1">Meeting Point 1</Label>
-              <TextInput
-                type="text"
-                id="meetingPoint1"
-                name="meetingPoint1"
-                value={formData.evacuationPlan.meetingPoints[0]}
-                onChange={(e) => handleMeetingPointChange(0, e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="meetingPoint2">Meeting Point 2</Label>
-              <TextInput
-                type="text"
-                id="meetingPoint2"
-                name="meetingPoint2"
-                value={formData.evacuationPlan.meetingPoints[1]}
-                onChange={(e) => handleMeetingPointChange(1, e.target.value)}
-              />
-            </div>
           </div>
         </div>
 
