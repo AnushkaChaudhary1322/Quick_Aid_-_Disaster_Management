@@ -59,7 +59,7 @@ const EmergencyModal = ({
               </p>
             </div>
           </ModalBody>
-          <ModalFooter>
+          {/* <ModalFooter>
             {(currentUser.user.role === "admin" ||
               currentUser.user.role === "volunteer") && (
               <Link to={`/allocate/${selectedIncident._id}`}>
@@ -68,7 +68,7 @@ const EmergencyModal = ({
                 </Button>
               </Link>
             )}
-          </ModalFooter>
+          </ModalFooter> */}
         </>
       )}
       {(modalType === "addIncident" || modalType === "editIncident") && (

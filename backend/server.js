@@ -14,7 +14,7 @@ import alertRoutes from "./routes/alertRoute.js";
 import postRoutes from "./routes/postRoute.js";
 import supplyRoutes from "./routes/donationRoute.js";
 import hospitalRoutes from "./routes/hospitalRoute.js";
-import responerRoutes from "./routes/responderRoute.js";
+// import responerRoutes from "./routes/responderRoute.js";
 import moneyDonationRoutes from "./routes/moneyDonationRoute.js";
 
 import bodyParser from "body-parser";
@@ -65,7 +65,7 @@ app.use("/api/alerts", alertRoutes);
 app.use("/api/threads", postRoutes);
 app.use("/api/donations", supplyRoutes);
 app.use("/api/hospital", hospitalRoutes);
-app.use("/api/responder", responerRoutes);
+// app.use("/api/responder", responerRoutes);
 app.use("/api/money-donations", moneyDonationRoutes);
 app.use("/api/razorpay", razorpayRoutes); 
 

@@ -128,7 +128,13 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     const url = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
     const text = `Click on this link to reset your password: ${url}. If you did not request this, please ignore.`;
 
-    await sendMail(user.email, "Reset Password", text);
+    // await sendMail(user.email, "Reset Password", text);
+    try {
+      await sendMail(user.email, "Reset Password", text);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      return res.status(500).json({ message: "Failed to send email" });
+    }
 
     res.status(200).json({
       message: `Reset password link has been sent to ${user.email}`,

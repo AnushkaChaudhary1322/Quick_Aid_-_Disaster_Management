@@ -30,9 +30,9 @@ const DashSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const toggleVolunteerDropdown = () => {
-    setIsVolunteerDropdownOpen(!isVolunteerDropdownOpen);
-  };
+  // const toggleVolunteerDropdown = () => {
+  //   setIsVolunteerDropdownOpen(!isVolunteerDropdownOpen);
+  // };
 
   return (
     <div className="relative h-full">
@@ -95,7 +95,13 @@ const DashSidebar = () => {
                 </Sidebar.Item>
               </Link>
 
-              <Sidebar.ItemGroup className="flex flex-col gap-1">
+              <Link to="/volunteers" onClick={toggleSidebar}>
+                <Sidebar.Item icon={HiHeart}>
+                Volunteer
+                </Sidebar.Item>
+              </Link>
+
+              {/* <Sidebar.ItemGroup className="flex flex-col gap-1">
                 <div
                   className="flex items-center cursor-pointer"
                   onClick={toggleVolunteerDropdown}
@@ -120,7 +126,7 @@ const DashSidebar = () => {
                     </Link>
                   </div>
                 )}
-              </Sidebar.ItemGroup>
+              </Sidebar.ItemGroup> */}
 
               <Sidebar.ItemGroup title="Donate" className="flex flex-col gap-1">
                 <Link to="/donatemoney" onClick={toggleSidebar}>

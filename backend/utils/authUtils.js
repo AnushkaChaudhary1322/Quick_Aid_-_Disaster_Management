@@ -5,7 +5,7 @@ import { errorHandler } from "./error.js";
 dotenvConfig();
 
 export const generateToken = (user) => {
-  return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "5h" });
+  return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
 export const verifyToken = (req, res, next) => {
