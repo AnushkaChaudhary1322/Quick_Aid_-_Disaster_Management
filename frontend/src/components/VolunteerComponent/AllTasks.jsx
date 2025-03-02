@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal } from "flowbite-react";
 import { BASE_URL } from "../../api/apiservice";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify"; // Import toast
-import { FaArrowLeft } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { FaArrowLeft, FaEdit, FaTrash } from "react-icons/fa";
+
 const AllTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,27 +12,6 @@ const AllTasks = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}/api/volunteers/tasks`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setTasks(data.tasks);
-          setLoading(false);
-        } else {
-          console.error("Failed to fetch tasks:", res.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching tasks:", error.message);
-      }
-    };
-
     fetchTasks();
   }, []);
 
@@ -47,12 +27,13 @@ const AllTasks = () => {
       if (res.ok) {
         const data = await res.json();
         setTasks(data.tasks);
-        toast.success("Task deleted successfully!"); // Toast notification after deleting task
       } else {
         console.error("Failed to fetch tasks:", res.statusText);
       }
     } catch (error) {
       console.error("Error fetching tasks:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,21 +44,17 @@ const AllTasks = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      const res = await fetch(
-        `${BASE_URL}/api/volunteers/tasks/${selectedTask._id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await fetch(`${BASE_URL}/api/volunteers/tasks/${selectedTask._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       if (res.ok) {
-        console.log("Task deleted successfully");
+        toast.success("Task deleted successfully!");
         fetchTasks();
       } else {
-        console.error("Failed to delete task:", res.statusText);
         toast.error("Failed to delete task. Please try again.");
       }
     } catch (error) {
@@ -89,6 +66,7 @@ const AllTasks = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Back Button */}
       <Button
         color="primary"
         className="flex items-center mb-4"
@@ -96,74 +74,90 @@ const AllTasks = () => {
       >
         <FaArrowLeft className="mr-2" /> Back
       </Button>
-      <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-bold">All Tasks</h2>
+
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">All Tasks</h2>
         <Link to="/create-task">
-          <Button variant="primary">Create Task</Button>
+          <Button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md transition-all">
+            Create Task
+          </Button>
         </Link>
       </div>
-      {loading ? (
-        <p>Loading tasks...</p>
-      ) : (
-        <>
-          <Table hoverable className="shadow-md">
-            <Table.Head>
-              <Table.HeadCell>Name</Table.HeadCell>
-              <Table.HeadCell>Description</Table.HeadCell>
-              <Table.HeadCell>Location</Table.HeadCell>
-              <Table.HeadCell>Actions</Table.HeadCell>
-            </Table.Head>
-            <Table.Body>
-              {tasks.map((task) => (
-                <Table.Row key={task._id}>
-                  <Table.Cell>{task.name}</Table.Cell>
-                  <Table.Cell>{task.description}</Table.Cell>
-                  <Table.Cell>{task.city}</Table.Cell>
-                  <Table.Cell className="flex">
-                    <Link
-                      to={{
-                        pathname: `/update-task/${task._id}`,
-                        state: { taskData: task },
-                      }}
-                    >
-                      <Button color="success" size="sm" className="mb-2 mr-2">
-                        Edit
-                      </Button>
-                    </Link>
 
-                    <Button
-                      gradientMonochrome="failure"
-                      size="sm"
-                      className="mb-2 mr-2"
-                      onClick={() => handleDeleteClick(task)}
-                    >
-                      Delete
-                    </Button>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-          <Modal
-            show={showDeleteModal}
-            onClose={() => setShowDeleteModal(false)}
-            popup
-          >
-            <Modal.Header>Confirmation</Modal.Header>
-            <Modal.Body>
-              Are you sure you want to delete task "{selectedTask?.name}"?
-            </Modal.Body>
-            <Modal.Footer>
-              <Button color="success" onClick={handleConfirmDelete}>
-                Yes
-              </Button>
-              <Button color="danger" onClick={() => setShowDeleteModal(false)}>
-                Cancel
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </>
+      {loading ? (
+        <p className="text-center text-gray-600">Loading tasks...</p>
+      ) : (
+        <Table hoverable className="shadow-md rounded-lg overflow-hidden">
+          <Table.Head className="bg-gray-100">
+            <Table.HeadCell>Name</Table.HeadCell>
+            <Table.HeadCell>Description</Table.HeadCell>
+            <Table.HeadCell>Location</Table.HeadCell>
+            <Table.HeadCell>Status</Table.HeadCell>
+            <Table.HeadCell>Actions</Table.HeadCell>
+          </Table.Head>
+          <Table.Body>
+            {tasks.map((task) => (
+              <Table.Row key={task._id} className="hover:bg-gray-50">
+                <Table.Cell>{task.name}</Table.Cell>
+                <Table.Cell>{task.description}</Table.Cell>
+                <Table.Cell>{task.city}</Table.Cell>
+                <Table.Cell>
+                  <span
+                    className={`px-3 py-1 rounded-full text-white text-xs font-semibold shadow-md 
+                      ${task.status === "completed" ? "bg-green-500" 
+                        : task.status === "In Progress" ? "bg-yellow-500" 
+                        : "bg-red-500"}`}
+                  >
+                    {task.status}
+                  </span>
+                </Table.Cell>
+                <Table.Cell className="flex space-x-3">
+                  {/* Edit Button */}
+                  <Link to={`/update-task/${task._id}`}>
+                    <button className="bg-blue-100 hover:bg-blue-200 text-blue-600 p-2 rounded-full shadow-sm transition-all">
+                      <FaEdit />
+                    </button>
+                  </Link>
+
+                  {/* Delete Button */}
+                  <button
+                    className="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-full shadow-sm transition-all"
+                    onClick={() => handleDeleteClick(task)}
+                  >
+                    <FaTrash />
+                  </button>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)} popup>
+        <Modal.Header>Confirmation</Modal.Header>
+        <Modal.Body>
+          <p className="text-gray-800">
+            Are you sure you want to delete the task{" "}
+            <strong className="text-red-600">"{selectedTask?.name}"</strong>?
+          </p>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-end space-x-3">
+          <Button
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md transition-all"
+            onClick={handleConfirmDelete}
+          >
+            Yes
+          </Button>
+          <Button
+            className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-md shadow-md transition-all"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

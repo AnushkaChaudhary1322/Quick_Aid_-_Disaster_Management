@@ -21,7 +21,7 @@ import { BASE_URL } from "../api/apiservice";
 const DashSidebar = () => {
   const [activeTab, setActiveTab] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isVolunteerDropdownOpen, setIsVolunteerDropdownOpen] = useState(false);
+  // const [isVolunteerDropdownOpen, setIsVolunteerDropdownOpen] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -79,6 +79,14 @@ const DashSidebar = () => {
                   icon={HiOutlineAnnotation}
                 >
                   Shelters
+                </Sidebar.Item>
+              </Link>
+              <Link to="/hospitals" onClick={toggleSidebar}>
+                <Sidebar.Item
+                  active={activeTab === "hospitals"}
+                  icon={HiOutlineAnnotation}
+                >
+                  Hospitals
                 </Sidebar.Item>
               </Link>
               <Link to="/plans" onClick={toggleSidebar}>

@@ -25,6 +25,8 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const UpdatePage = lazy(() => import("./pages/UpdatePage"));
 const AddShelter = lazy(() => import("./components/Shelters/AddShelter"));
 const ShowShelter = lazy(() => import("./components/Shelters/ShowShelter"));
+const AddHospital = lazy(() => import("./components/Hospital/AddHospital"));
+const ShowHospital = lazy(() => import("./components/Hospital/ShowHospital"));
 const AllVolunteers = lazy(() => import("./pages/AllVolunteers"));
 const AssignTask = lazy(() =>
   import("./components/VolunteerComponent/AssignTask")
@@ -52,6 +54,7 @@ const ShowEmergencies = lazy(() =>
 );
 const HeroPage = lazy(() => import("./pages/HeroPage"));
 const DashShelters = lazy(() => import("./pages/DashShelters"));
+const DashHospital = lazy(() => import("./pages/DashHospital"));
 
 function App() {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -77,7 +80,9 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<UpdatePage />} />
                 <Route path="/add-shelter" element={<AddShelter />} />
+                <Route path="/add-hospital" element={<AddHospital />} />
                 <Route path="/shelter/:shelterId" element={<ShowShelter />} />
+                <Route path="/hospital/:hospitalId" element={<ShowHospital />} />
                 <Route path="/volunteers" element={<AllVolunteers />} />
                 <Route path="/admin/assign-task/:id" element={<AssignTask />} />
                 <Route path="/admin/tasks" element={<AllTasks />} />
@@ -93,6 +98,7 @@ function App() {
                 <Route path="/create-responder" element={<CreateResponder />} />
                 <Route path="/allresponders" element={<AllResponders />} />
                 <Route path="/shelters" element={<DashShelters />} />
+                <Route path="/hospital" element={<DashHospital />} />
                 <Route path="/plans" element={<GetPlan />} />
                 <Route path="/createplan" element={<CreatePlan />} />
                 <Route path="/updateplan" element={<UpdatePlan />} />

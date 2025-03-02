@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   const isLead = currentUser && currentUser.user.role === "lead";
   const totalVolunteers = 100;
   const totalShelters = 20;
-  const totalEmergencyResponders = 50;
+  // const totalEmergencyResponders = 50;
 
   const [totalTasks, setTotalTasks] = useState(0);
   const [totalUsers, setTotalUsers] = useState([]);
@@ -28,6 +28,7 @@ const AdminDashboard = () => {
   const [emergencyAlerts, setEmergencyAlerts] = useState([]);
   const [alertsWithoutSlice, setAlertsWithoutSlice] = useState(0);
   const [shelters, setShelters] = useState([]);
+  const [hospitals, setHospitals] = useState([]);
   const [donations, setDonations] = useState([]);
 
   useEffect(() => {
@@ -111,11 +112,25 @@ const AdminDashboard = () => {
         console.error("Error fetching shelters:", error.message);
       }
     };
+
+    const fetchHospitals = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/api/hospital/`);
+        if (res.ok) {
+          const data = await res.json();
+          setHospitals(data);
+        }
+      } catch (error) {
+        console.error("Error fetching hospitals:", error.message);
+      }
+    };
+
     fetchTasks();
     fetchAlerts();
     fetchEmergencies();
     fetchDonations();
     fetchShelters();
+    fetchHospitals();
     fetchUsers();
   }, [currentUser]);
 
@@ -142,8 +157,10 @@ const AdminDashboard = () => {
               Welcome, {currentUser.user.fullName}!
             </h2>
           </div>
+          {/* Upper-1 Part */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {isAdmin && (
+              // Create Shelter
               <div className="bg-white rounded-lg shadow-md p-4">
                 <h3 className="text-lg font-semibold mb-2">Manage Shelters</h3>
                 <Link
@@ -154,7 +171,17 @@ const AdminDashboard = () => {
                 </Link>
               </div>
             )}
+            {isAdmin && (
+              // Create Hospital
+              <div className="bg-white rounded-lg shadow-md p-4">
+                <h3 className="text-lg font-semibold mb-2">Manage Hospitals</h3>
+                <Link to="/add-hospital" className="text-blue-500 hover:text-blue-700">
+                  Create New Hospital
+                </Link>
+              </div>
+            )}
             {isLead && (
+              // Create Tasks
               <div className="bg-white rounded-lg shadow-md p-4">
                 <h3 className="text-lg font-semibold mb-2">
                   Manage Responders
@@ -176,6 +203,7 @@ const AdminDashboard = () => {
                 View All Tasks
               </Link>
             </div>
+            {/* Volunteers */}
             <div className="bg-white rounded-lg shadow-md p-4">
               <h3 className="text-lg font-semibold mb-2">Manage Volunteers</h3>
               <Link
@@ -185,6 +213,7 @@ const AdminDashboard = () => {
                 View All Volunteers
               </Link>
             </div>
+            {/* Emergency Update */}
             <div className="bg-white rounded-lg shadow-md p-4">
               <h3 className="text-lg font-semibold mb-2">Emergency Updates</h3>
               <Link
@@ -195,26 +224,35 @@ const AdminDashboard = () => {
               </Link>
             </div>
           </div>
+
+          {/* Upper-2 Part */}
           <div className="mt-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div className="dashboard-card bg-blue-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
                 <FiList className="text-white text-3xl mr-4" />
                 <div>
                   <h5 className="text-white text-lg">Total Shelters</h5>
-                  <p className="text-white text-xl font-bold">
-                    {shelters.length}
-                  </p>
+                  <p className="text-white text-xl font-bold">{shelters.length}</p>
                 </div>
               </div>
+
+              {/*Total Hospitals */}
+              <div className="dashboard-card bg-blue-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
+                <FiList className="text-white text-3xl mr-4" />
+                <div>
+                  <h5 className="text-white text-lg">Total Hospitals</h5>
+                  <p className="text-white text-xl font-bold">{hospitals.length}</p>
+                </div>
+              </div>
+
               <div className="dashboard-card bg-blue-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
                 <FiCheckCircle className="text-white text-3xl mr-4" />
                 <div>
                   <h5 className="text-white text-lg">Total Emergencies</h5>
-                  <p className="text-white text-xl font-bold">
-                    {recentActivities.length}
-                  </p>
+                  <p className="text-white text-xl font-bold">{recentActivities.length}</p>
                 </div>
               </div>
+
               <div className="dashboard-card bg-teal-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
                 <FiAward className="text-white text-3xl mr-4" />
                 <div>
@@ -222,18 +260,18 @@ const AdminDashboard = () => {
                   <p className="text-white text-xl font-bold">{totalUsers}</p>
                 </div>
               </div>
+
               <div className="dashboard-card bg-yellow-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
                 <FiAlertCircle className="text-white text-3xl mr-4" />
                 <div>
                   <h5 className="text-white text-lg">Alerts</h5>
-                  <p className="text-white text-xl font-bold">
-                    {alertsWithoutSlice}
-                  </p>
+                  <p className="text-white text-xl font-bold">{alertsWithoutSlice}</p>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
               <Link to="/alerts" className="bg-white p-4 rounded-lg shadow-md">
                 <h3 className="text-xl font-semibold mb-2 text-gray-700">
                   Recent Alerts
@@ -342,7 +380,7 @@ const AdminDashboard = () => {
               </p>
             </div>
           </div>
-        </div>
+        
       )}
     </div>
   );

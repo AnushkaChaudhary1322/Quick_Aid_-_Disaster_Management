@@ -46,16 +46,17 @@ const CreateTask = () => {
   };
 
   return (
-    <>
-      <Button
-        color="primary"
-        className="flex items-center mb-4"
-        onClick={() => window.history.back()}
-      >
-        <FaArrowLeft className="mr-2" /> Back
-      </Button>
-      |
-      <div className="flex items-center justify-center min-h-screen">
+    <div>
+      <div>
+          <Button
+            color="primary"
+            className="flex items-center mb-4"
+            onClick={() => window.history.back()}
+          >
+            <FaArrowLeft className="mr-2" /> Back
+          </Button>
+      </div>
+      <div className="flex justify-center min-h-fit">
         <form
           className="max-w-md w-full p-6 bg-white shadow-md rounded-lg"
           onSubmit={handleSubmit}
@@ -84,28 +85,31 @@ const CreateTask = () => {
               required
             />
           </div>
-          <div className="mb-4">
-            <Label htmlFor="city" value="City" />
-            <TextInput
-              id="city"
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-              placeholder="City"
-              required
-            />
+          <div className="mb-4 flex gap-4">
+            <div className="w-1/2">
+              <Label htmlFor="city" value="City" />
+              <TextInput
+                id="city"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                placeholder="City"
+                required
+              />
+            </div>
+            <div className="w-1/2">
+              <Label htmlFor="area" value="Area" />
+              <TextInput
+                id="area"
+                name="area"
+                value={formData.area}
+                onChange={handleInputChange}
+                placeholder="Area"
+                required
+              />
+            </div>
           </div>
-          <div className="mb-4">
-            <Label htmlFor="area" value="Area" />
-            <TextInput
-              id="area"
-              name="area"
-              value={formData.area}
-              onChange={handleInputChange}
-              placeholder="Area"
-              required
-            />
-          </div>
+
           <div className="mb-4">
             <Label htmlFor="status" value="Status" />
             <Select
@@ -127,7 +131,7 @@ const CreateTask = () => {
           </Button>
         </form>
       </div>
-    </>
+    </div>
   );
 };
 
