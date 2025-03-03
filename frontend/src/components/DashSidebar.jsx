@@ -81,7 +81,7 @@ const DashSidebar = () => {
                   Shelters
                 </Sidebar.Item>
               </Link>
-              <Link to="/hospitals" onClick={toggleSidebar}>
+              <Link to="/hospital" onClick={toggleSidebar}>
                 <Sidebar.Item
                   active={activeTab === "hospitals"}
                   icon={HiOutlineAnnotation}

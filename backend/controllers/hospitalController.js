@@ -9,18 +9,40 @@ export const getHospitals = async (req, res) => {
   }
 };
 
-export const createHospital = async (req, res) => {
-  const hospital = req.body;
+// export const createHospital = async (req, res) => {
+//   const hospital = req.body;
 
-  const newHospital = new Hospital(hospital);
+//   const newHospital = new Hospital(hospital);
+//   try {
+//     await newHospital.save();
+//     res.status(201).json(newHospital);
+//   } catch (error) {
+//     res.status(409).json({ message: error.message });
+//   }
+// };
+//for development only
+
+export const createHospital = async (req, res) => {
+  const { name, contact } = req.body;
+
   try {
+    const existingHospital = await Hospital.findOne({
+      $or: [{ name }, { "contact.email": contact.email }],
+    });
+
+    if (existingHospital) {
+      return res.status(409).json({ message: "Hospital already exists" });
+    }
+
+    const newHospital = new Hospital(req.body);
     await newHospital.save();
     res.status(201).json(newHospital);
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
-//for development only
+
+
 export const insertManyHospitals = async (req, res) => {
   const hospitals = req.body.hospitals;
 

@@ -7,7 +7,7 @@ import {
   getHospitals,
   getHospitalsByArea,
   insertManyHospitals,
-} from "../controllers/hospitalContrller.js";
+} from "../controllers/hospitalController.js";
 
 const router = express.Router();
 

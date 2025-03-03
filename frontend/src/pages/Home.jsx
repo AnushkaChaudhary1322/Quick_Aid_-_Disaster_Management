@@ -389,17 +389,16 @@ const Home = () => {
                     style={{ marginRight: "15px" }}
                   >
                     <img
-                      src={hospital.photoUrl}
-                      alt={hospital.name}
+                      src={hospital.photos[0]}
+                      alt="Main Photo"
                       className="w-full h-48 object-cover"
-                      loading="lazy"
                     />
                     <div className="p-4 h-full">
                       <h5 className="text-xl font-bold tracking-tight text-gray-900">
                         {hospital.name}
                       </h5>
                       <p className="text-sm text-gray-600">
-                        {hospital.area}, {hospital.city}
+                        {hospital.location}
                       </p>
                     </div>
                   </Card>
