@@ -158,7 +158,7 @@ const AdminDashboard = () => {
             </h2>
           </div>
           {/* Upper-1 Part */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {isAdmin && (
               // Create Shelter
               <div className="bg-white rounded-lg shadow-md p-4">
@@ -227,7 +227,7 @@ const AdminDashboard = () => {
 
           {/* Upper-2 Part */}
           <div className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
               <div className="dashboard-card bg-blue-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
                 <FiList className="text-white text-3xl mr-4" />
                 <div>
@@ -236,8 +236,8 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              {/*Total Hospitals */}
-              <div className="dashboard-card bg-blue-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
+              
+              <div className="dashboard-card bg-green-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
                 <FiList className="text-white text-3xl mr-4" />
                 <div>
                   <h5 className="text-white text-lg">Total Hospitals</h5>
@@ -245,7 +245,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="dashboard-card bg-blue-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
+              <div className="dashboard-card bg-red-500 p-4 rounded-lg shadow-md flex items-center transition-transform transform hover:scale-105">
                 <FiCheckCircle className="text-white text-3xl mr-4" />
                 <div>
                   <h5 className="text-white text-lg">Total Emergencies</h5>
@@ -271,6 +271,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          {/* Alerts & Critical Contacts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
               <Link to="/alerts" className="bg-white p-4 rounded-lg shadow-md">
                 <h3 className="text-xl font-semibold mb-2 text-gray-700">
@@ -302,7 +303,8 @@ const AdminDashboard = () => {
                 </ul>
               </div>
             </div>
-
+            
+            {/* Activities & Events */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
               <div className="bg-white p-4 rounded-lg shadow-md">
                 <h3 className="text-xl font-semibold mb-2 text-gray-700">
@@ -329,7 +331,8 @@ const AdminDashboard = () => {
                 </ul>
               </div>
             </div>
-
+            
+            {/* Question -> Community */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
               <Link to="/community">
                 <div className="bg-white p-4 rounded-lg shadow-md">
@@ -356,7 +359,8 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </Link>
-
+              
+              {/* Donation */}
               <div className="bg-white p-4 rounded-lg shadow-md">
                 <h3 className="text-xl font-semibold mb-2 text-gray-700">
                   Donations
@@ -372,7 +376,8 @@ const AdminDashboard = () => {
                 </ul>
               </div>
             </div>
-
+            
+            {/* Emergency */}
             <div className="flex items-center p-4 bg-red-100 rounded-lg shadow-md">
               <FiPhone className="text-red-500 text-3xl mr-4" />
               <p className="text-red-700 text-lg">
