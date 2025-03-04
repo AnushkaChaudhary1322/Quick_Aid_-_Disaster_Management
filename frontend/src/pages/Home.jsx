@@ -469,7 +469,7 @@ const Home = () => {
       </div>
       <footer className="mt-10 bg-gray-200 flex flex-col md:flex-row items-center md:justify-between">
         <div className="p-6 sm:p-8 hidden sm:block">
-          <img src="/Quick-Aid3.png" alt="logo" className="h-16" />
+          <img src="/logo-bg.png" alt="logo" className="h-16" />
         </div>
 
         <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-center">
