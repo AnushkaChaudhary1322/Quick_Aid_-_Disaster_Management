@@ -66,7 +66,7 @@ const AllTasks = () => {
     }
   };
 
-  // ✅ Function to allow volunteers to take a task
+  // Function to allow volunteers to take a task
   const handleTakeTask = async (taskId) => {
     try {
       const res = await fetch(`${BASE_URL}/api/volunteers/tasks/take`, {

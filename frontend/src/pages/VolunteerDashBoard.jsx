@@ -29,12 +29,12 @@ const VolunteerDashboard = () => {
         if (res.ok) {
           const tasks = await res.json();
 
-          // ✅ Get total and completed task count
+          // Get total and completed task count
           setTotalTasks(tasks.length);
           const completedTaskCount = tasks.filter(task => task.status === "completed").length;
           setCompletedTasks(completedTaskCount);
 
-          // ✅ Calculate total points correctly
+          // Calculate total points correctly
           const earnedPoints = tasks
             .filter(task => task.status === "completed")
             .reduce((sum, task) => sum + (task.points || 10), 0);
