@@ -21,6 +21,8 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import razorpayRoutes from "./routes/razorpayRoute.js"; 
 
+import shelterCSVRoute from "./routes/shelterCSV.js";
+
 dotenvConfig();
 
 const app = express();
@@ -32,6 +34,9 @@ const io = new Server(server, {
     credentials: true,
   },
 });
+
+
+
 
 app.use((req, res, next) => {
   req.io = io;
@@ -57,7 +62,7 @@ connectDB();
 // Register All Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/shelter", shelterRoutes);
+// app.use("/api/shelter", shelterRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/incident", incidentRoutes);
@@ -68,6 +73,8 @@ app.use("/api/hospital", hospitalRoutes);
 // app.use("/api/responder", responerRoutes);
 app.use("/api/money-donations", moneyDonationRoutes);
 app.use("/api/razorpay", razorpayRoutes); 
+
+app.use('/api/shelters', shelterCSVRoute);
 
 io.on("connection", (socket) => {
   console.log("New client connected");
