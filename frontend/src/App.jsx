@@ -97,7 +97,7 @@ function App() {
                 /> */}
                 {/* <Route path="/create-responder" element={<CreateResponder />} /> */}
                 {/* <Route path="/allresponders" element={<AllResponders />} /> */}
-                <Route path="/shelters" element={<DashShelters />} />
+                <Route path="/shelter" element={<DashShelters />} />
                 <Route path="/hospital" element={<DashHospital />} />
                 <Route path="/plans" element={<GetPlan />} />
                 <Route path="/createplan" element={<CreatePlan />} />

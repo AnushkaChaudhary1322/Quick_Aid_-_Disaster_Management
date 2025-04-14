@@ -352,8 +352,8 @@ const Home = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 ml-4">
               {shelters.map((shelter) => (
-                <div className="max-w-xs" key={shelter._id}>
-                  <Link to={`/shelter/${shelter._id}`}>
+                <div className="max-w-xs" key={shelter._id || shelter.name}>
+                  <Link to={`/shelter/${shelter._id || shelter.name}`}>
                     <Card className="h-full">
                       <img
                         src={shelter.photos[0]}
@@ -469,7 +469,7 @@ const Home = () => {
       </div>
       <footer className="mt-10 bg-gray-200 flex flex-col md:flex-row items-center md:justify-between">
         <div className="p-6 sm:p-8 hidden sm:block">
-          <img src="/logo-bg.png" alt="logo" className="h-16" />
+          <img src="/Quick-Aid3.png" alt="logo" className="h-16" />
         </div>
 
         <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-center">
