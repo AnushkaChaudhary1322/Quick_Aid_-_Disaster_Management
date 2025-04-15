@@ -106,7 +106,7 @@
 
 // export default DashShelters;
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { BASE_URL } from "../api/apiservice";
@@ -115,54 +115,90 @@ const DashShelter = () => {
   const [shelters, setShelters] = useState([]);
   const [csvShelters, setCsvShelters] = useState([]);
   const [searchLocation, setSearchLocation] = useState("");
+  const [csvPage, setCsvPage] = useState(1);
+  const [hasMoreCsv, setHasMoreCsv] = useState(true);
+  const observer = useRef();
 
   // Fetch MongoDB shelters
   const fetchShelters = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/shelter/`);
-      console.log("✅ MongoDB shelters fetched:", response.data);
       setShelters(response.data);
     } catch (error) {
       console.error("❌ Error fetching MongoDB shelters:", error);
     }
   };
 
-  // Fetch CSV shelters
-  const fetchCsvShelters = async () => {
+  // ✅ Fetch paginated shelters from /combined, and filter out CSV
+  const fetchCsvShelters = async (page = 1) => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/shelter/csv`);
-      console.log("✅ CSV shelters fetched:", response.data);
-      setCsvShelters(response.data);
+      const response = await axios.get(`${BASE_URL}/api/shelter/combined?page=${page}&limit=10`);
+      const allData = response.data?.data || [];
+      const newCsvShelters = allData.filter((shelter) => !shelter._id);
+
+      if (newCsvShelters.length === 0) {
+        setHasMoreCsv(false);
+      } else {
+        setCsvShelters((prev) => [...prev, ...newCsvShelters]);
+      }
     } catch (error) {
       console.error("❌ Error fetching CSV shelters:", error);
+      setHasMoreCsv(false);
     }
   };
 
-  // Fetch by search location
+  // ✅ Search shelters (both Mongo + CSV) using /combined
   const fetchSheltersByLocation = async (location) => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/shelter/search/${location}`);
-      console.log("🔍 Searched shelters:", response.data);
-      setShelters(response.data);
-      setCsvShelters([]); // Optional: hide CSV shelters when searching
+      const response = await axios.get(`${BASE_URL}/api/shelter/combined?location=${location}`);
+      const allData = response.data?.data || [];
+
+      const mongoData = allData.filter((shelter) => shelter._id);
+      const csvData = allData.filter((shelter) => !shelter._id);
+
+      setShelters(mongoData);
+      setCsvShelters(csvData);
+      setHasMoreCsv(false); // Disable infinite scroll while searching
     } catch (error) {
       console.error("❌ Error searching shelters:", error);
     }
   };
 
+  // Initial data load
   useEffect(() => {
     fetchShelters();
-    fetchCsvShelters();
+    fetchCsvShelters(1);
   }, []);
 
+  // Search logic
   useEffect(() => {
     if (searchLocation.trim() !== "") {
       fetchSheltersByLocation(searchLocation);
     } else {
+      // Reset to full list
       fetchShelters();
-      fetchCsvShelters();
+      setCsvShelters([]);
+      setCsvPage(1);
+      setHasMoreCsv(true);
+      fetchCsvShelters(1);
     }
   }, [searchLocation]);
+
+  // Infinite scroll
+  const lastShelterRef = useCallback(
+    (node) => {
+      if (!hasMoreCsv) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          fetchCsvShelters(csvPage + 1);
+          setCsvPage((prev) => prev + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [csvPage, hasMoreCsv]
+  );
 
   const handleSearchChange = (e) => {
     setSearchLocation(e.target.value);
@@ -173,13 +209,8 @@ const DashShelter = () => {
     ...csvShelters.map((shelter) => ({ ...shelter, source: "csv" })),
   ];
 
-  console.log("Combined shelters:", allShelters);
-
   return (
-    <>
     <div className="min-h-screen flex flex-col justify-start items-center text-white">
-      
-
       <div className="mt-6 w-full max-w-xl px-4">
         <input
           type="text"
@@ -193,35 +224,46 @@ const DashShelter = () => {
       {allShelters.length === 0 ? (
         <p className="text-lg mt-10">🔍 No shelters found...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
-          {allShelters.map((shelter, index) => (
-            <div
-              key={`${shelter._id || shelter.id || index}`}
-              className="bg-white text-black rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
-            >
-              <Link
-                to={`/shelter/${shelter.source === "csv" ? `csv/${shelter.id}` : shelter._id}`}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 w-full max-w-screen-xl">
+          {allShelters.map((shelter, index) => {
+            const isLast = index === allShelters.length - 1 && shelter.source === "csv";
+            return (
+              <div
+                key={`${shelter._id || shelter.id || index}`}
+                ref={isLast ? lastShelterRef : null}
+                className="bg-white text-black rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
               >
-                <img
-                  src={shelter.photos?.[0] || "https://i.pinimg.com/736x/1d/8e/a2/1d8ea29930228f56fb6baabf12f7ff71.jpg"}
-                  alt={shelter.name || "Unnamed Shelter"}
-                  className="w-full h-48 object-cover"
-                  onError={(e) => (e.target.src = "https://i.pinimg.com/736x/35/f5/35/35f5351d4931bf8cbce805957d03c186.jpg")}
-                />
-                <div className="p-4">
-                  <h2 className="font-bold text-xl">{shelter.name || "Unnamed Shelter"}</h2>
-                  <p className="text-sm text-gray-600">{shelter.location || "Unknown location"}</p>
-                  <p className="mt-2 text-xs italic text-gray-500">
-                    Source: {shelter.source === "csv" ? "CSV File" : "MongoDB"}
-                  </p>
-                </div>
-              </Link>
-            </div>
-          ))}
+                <Link
+                  to={`/shelter/${shelter.source === "csv" ? `csv/${shelter.id}` : shelter._id}`}
+                >
+                  <img
+                    src={
+                      shelter.photos?.[0] ||
+                      "https://i.pinimg.com/736x/1d/8e/a2/1d8ea29930228f56fb6baabf12f7ff71.jpg"
+                    }
+                    alt={shelter.name || "Unnamed Shelter"}
+                    className="w-full h-48 object-cover"
+                    onError={(e) =>
+                      (e.target.src =
+                        "https://i.pinimg.com/736x/35/f5/35/35f5351d4931bf8cbce805957d03c186.jpg")
+                    }
+                  />
+                  <div className="p-4">
+                    <h2 className="font-bold text-xl">{shelter.name || "Unnamed Shelter"}</h2>
+                    <p className="text-sm text-gray-600">
+                      {shelter.location || "Unknown location"}
+                    </p>
+                    <p className="mt-2 text-xs italic text-gray-500">
+                      Source: {shelter.source === "csv" ? "CSV File" : "MongoDB"}
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
-    </>
   );
 };
 

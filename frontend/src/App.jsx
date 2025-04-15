@@ -193,8 +193,8 @@ function AppLayout() {
               <Route path="/login" element={<Login />} />
               <Route path="/forgotpassword" element={<ForgotPassword />} />
               <Route path="/resetpassword/:token" element={<ResetPassword />} />
-              <Route path="/shelters/:shelterId" element={<HomeShelter />} />
-              <Route path="/hospitals/:hospitalId" element={<HomeHospital />} />
+              <Route path="/shelter/:shelterId" element={<HomeShelter />} />
+              <Route path="/hospital/:hospitalId" element={<HomeHospital />} />
 
               {/* Protected Routes */}
               {currentUser && (
@@ -206,11 +206,12 @@ function AppLayout() {
                   <Route path="/shelters" element={<DashShelters />} />
                   <Route path="/add-shelter" element={<AddShelter />} />
                   <Route path="/shelters/view/:shelterId" element={<ShowShelter />} />
+                  {/* <Route path="/shelter/:shelterId" element={<ShowShelter />} /> */}
 
                   {/* Hospital Routes */}
                   <Route path="/hospitals" element={<DashHospital />} />
                   <Route path="/add-hospital" element={<AddHospital />} />
-                  <Route path="/hospitals/view/:hospitalId" element={<ShowHospital />} />
+                  <Route path="/hospital/:hospitalId" element={<ShowHospital />} />
 
                   {/* Volunteer & Task Routes */}
                   <Route path="/volunteers" element={<AllVolunteers />} />

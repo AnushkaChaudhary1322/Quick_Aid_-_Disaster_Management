@@ -178,6 +178,7 @@
 
 // export default ShowShelter;
 
+// ShowShelter.jsx
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -185,21 +186,24 @@ import { BASE_URL } from "../api/apiservice";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
 const ShowShelter = () => {
-  const { id } = useParams();
+  const { shelterId } = useParams(); // ✅ Use correct param name
   const [shelter, setShelter] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchShelterDetails = async () => {
       try {
-        // Determine if the route is for a CSV shelter or not
-        const isCsv = window.location.pathname.includes("/shelter/csv/");
+        // Determine if it's a CSV-based shelter by checking the ID format
+        const isCsv = shelterId.startsWith("csv-");
+        const cleanId = isCsv ? shelterId.replace("csv-", "") : shelterId;
+
         const endpoint = isCsv
-          ? `${BASE_URL}/api/shelter/csv/${id}`
-          : `${BASE_URL}/api/shelter/${id}`;
+          ? `${BASE_URL}/api/shelter/csv/${cleanId}`
+          : `${BASE_URL}/api/shelter/${cleanId}`;
+
         const res = await fetch(endpoint);
         const data = await res.json();
-        setShelter(data);
+        setShelter({ ...data, isCsv }); // include isCsv for later use
       } catch (error) {
         console.error("Error fetching shelter details:", error);
       } finally {
@@ -208,7 +212,7 @@ const ShowShelter = () => {
     };
 
     fetchShelterDetails();
-  }, [id]);
+  }, [shelterId]);
 
   if (loading) {
     return <p className="text-center text-gray-700 mt-8">Loading shelter details...</p>;
