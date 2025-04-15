@@ -109,8 +109,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import { BASE_URL } from "../config";
+import { BASE_URL } from "../api/apiservice";
 
 const DashShelter = () => {
   const [shelters, setShelters] = useState([]);
@@ -174,11 +173,12 @@ const DashShelter = () => {
     ...csvShelters.map((shelter) => ({ ...shelter, source: "csv" })),
   ];
 
-  console.log("📦 Combined shelters:", allShelters);
+  console.log("Combined shelters:", allShelters);
 
   return (
-    <div className="min-h-screen flex flex-col justify-start items-center bg-red-900 text-white">
-      <Navbar />
+    <>
+    <div className="min-h-screen flex flex-col justify-start items-center text-white">
+      
 
       <div className="mt-6 w-full max-w-xl px-4">
         <input
@@ -203,10 +203,10 @@ const DashShelter = () => {
                 to={`/shelter/${shelter.source === "csv" ? `csv/${shelter.id}` : shelter._id}`}
               >
                 <img
-                  src={shelter.photos?.[0] || "https://via.placeholder.com/400x250.png?text=No+Image"}
+                  src={shelter.photos?.[0] || "https://i.pinimg.com/736x/1d/8e/a2/1d8ea29930228f56fb6baabf12f7ff71.jpg"}
                   alt={shelter.name || "Unnamed Shelter"}
                   className="w-full h-48 object-cover"
-                  onError={(e) => (e.target.src = "https://via.placeholder.com/400x250.png?text=No+Image")}
+                  onError={(e) => (e.target.src = "https://i.pinimg.com/736x/35/f5/35/35f5351d4931bf8cbce805957d03c186.jpg")}
                 />
                 <div className="p-4">
                   <h2 className="font-bold text-xl">{shelter.name || "Unnamed Shelter"}</h2>
@@ -221,6 +221,7 @@ const DashShelter = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

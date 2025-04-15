@@ -35,7 +35,7 @@ import {
   updateShelter,
   countShelters,
   getSheltersByLocation,
-  getSheltersFromCSV, // ✅ New import
+  getCombinedShelters, // ✅ Final combined function
 } from "../controllers/shelterController.js";
 
 const router = express.Router();
@@ -47,10 +47,9 @@ router.delete("/:shelterId", isAdmin, deleteShelter);
 router.get("/count", isAdmin, countShelters);
 
 // Common routes
-router.get("/csv", getSheltersFromCSV); // ✅ New route to serve CSV-based shelters
+router.get("/combined", getCombinedShelters); // ✅ Use this to serve CSV + Mongo shelters
 router.get("/location/:location", getSheltersByLocation);
 router.get("/", getAllShelters);
 router.get("/:shelterId", getShelterById);
 
 export default router;
-

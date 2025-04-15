@@ -180,94 +180,83 @@
 
 
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { BASE_URL } from "../api/apiservice";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
 const ShowShelter = () => {
-  const [shelters, setShelters] = useState([]);
+  const { id } = useParams();
+  const [shelter, setShelter] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchShelters = async () => {
+    const fetchShelterDetails = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/shelter`);
-        const data = await response.json();
-        setShelters(data);
-        setLoading(false);
+        // Determine if the route is for a CSV shelter or not
+        const isCsv = window.location.pathname.includes("/shelter/csv/");
+        const endpoint = isCsv
+          ? `${BASE_URL}/api/shelter/csv/${id}`
+          : `${BASE_URL}/api/shelter/${id}`;
+        const res = await fetch(endpoint);
+        const data = await res.json();
+        setShelter(data);
       } catch (error) {
-        console.error("Error fetching shelters:", error);
+        console.error("Error fetching shelter details:", error);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchShelters();
-  }, []);
+    fetchShelterDetails();
+  }, [id]);
 
-  const handleViewShelter = (shelterId, isCsv) => {
-    if (isCsv) {
-      navigate(`/shelter/csv/${shelterId}`);
-    } else {
-      navigate(`/shelter/${shelterId}`);
-    }
-  };
+  if (loading) {
+    return <p className="text-center text-gray-700 mt-8">Loading shelter details...</p>;
+  }
+
+  if (!shelter) {
+    return <p className="text-center text-red-600 mt-8">Shelter not found.</p>;
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-semibold mb-6 text-center text-gray-800">
-        Available Shelters
-      </h1>
-      {loading ? (
-        <p className="text-center text-gray-700">Loading shelters...</p>
-      ) : shelters.length === 0 ? (
-        <p className="text-center text-gray-700">No shelters found.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {shelters.map((shelter) => (
-            <div
-              key={shelter._id}
-              className="bg-white shadow-lg rounded-lg overflow-hidden"
-            >
-              <img
-                src={
-                  shelter.isCsv
-                    ? "https://via.placeholder.com/400x200.png?text=Shelter"
-                    : shelter.photos?.[0] ||
-                      "https://via.placeholder.com/400x200.png?text=Shelter"
-                }
-                alt="Shelter"
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h2 className="text-xl font-semibold mb-2 text-gray-800">
-                  {shelter.name}
-                </h2>
-                <p className="text-gray-600 mb-2">
-                  <FaMapMarkerAlt className="inline-block mr-1" />
-                  {shelter.location}
-                </p>
-                <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Capacity:</span>{" "}
-                  {shelter.capacity}
-                </p>
-                <p className="text-gray-600 mb-4">
-                  <span className="font-semibold">Availability:</span>{" "}
-                  {shelter.availability ? "Available" : "Unavailable"}
-                </p>
-                <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-                  onClick={() =>
-                    handleViewShelter(shelter._id || shelter.id, shelter.isCsv)
-                  }
-                >
-                  View Shelter
-                </button>
-              </div>
-            </div>
-          ))}
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+        <img
+          src={
+            shelter.isCsv
+              ? "https://via.placeholder.com/600x300.png?text=Shelter"
+              : shelter.photos?.[0] ||
+                "https://via.placeholder.com/600x300.png?text=Shelter"
+          }
+          alt="Shelter"
+          className="w-full h-64 object-cover"
+        />
+        <div className="p-6">
+          <h1 className="text-3xl font-bold mb-4 text-gray-800">
+            {shelter.name}
+          </h1>
+          <p className="text-gray-700 mb-2">
+            <FaMapMarkerAlt className="inline-block mr-2 text-blue-500" />
+            {shelter.location}
+          </p>
+          <p className="text-gray-700 mb-2">
+            <span className="font-semibold">Capacity:</span>{" "}
+            {shelter.capacity}
+          </p>
+          <p className="text-gray-700 mb-2">
+            <span className="font-semibold">Availability:</span>{" "}
+            {shelter.availability ? "Available" : "Unavailable"}
+          </p>
+          {shelter.contact && (
+            <p className="text-gray-700 mb-2">
+              <span className="font-semibold">Contact:</span> {shelter.contact}
+            </p>
+          )}
+          {shelter.description && (
+            <p className="text-gray-700 mt-4">{shelter.description}</p>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

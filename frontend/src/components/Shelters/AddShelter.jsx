@@ -163,14 +163,14 @@ const AddShelter = () => {
             required
             className="mb-4"
           />
-          <TextInput
+          <textarea
             name="description"
-            type="text"
             placeholder="Description"
             value={formData.description}
             onChange={handleChange}
             required
-            className="mb-4"
+            className="mb-4 w-full border border-gray-300 rounded px-4 py-2"
+            rows={3}
           />
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
