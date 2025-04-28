@@ -129,7 +129,7 @@ const DashShelter = () => {
     }
   };
 
-  // ✅ Fetch paginated shelters from /combined, and filter out CSV
+  // Fetch paginated CSV shelters from /combined (filtering out MongoDB)
   const fetchCsvShelters = async (page = 1) => {
     try {
       const response = await axios.get(`${BASE_URL}/api/shelter/combined?page=${page}&limit=10`);
@@ -147,7 +147,7 @@ const DashShelter = () => {
     }
   };
 
-  // ✅ Search shelters (both Mongo + CSV) using /combined
+  // Search shelters (both MongoDB + CSV) using /combined endpoint
   const fetchSheltersByLocation = async (location) => {
     try {
       const response = await axios.get(`${BASE_URL}/api/shelter/combined?location=${location}`);
@@ -164,18 +164,17 @@ const DashShelter = () => {
     }
   };
 
-  // Initial data load
+  // Initial load
   useEffect(() => {
     fetchShelters();
     fetchCsvShelters(1);
   }, []);
 
-  // Search logic
+  // Handle search
   useEffect(() => {
     if (searchLocation.trim() !== "") {
       fetchSheltersByLocation(searchLocation);
     } else {
-      // Reset to full list
       fetchShelters();
       setCsvShelters([]);
       setCsvPage(1);
@@ -184,7 +183,7 @@ const DashShelter = () => {
     }
   }, [searchLocation]);
 
-  // Infinite scroll
+  // Infinite scroll observer
   const lastShelterRef = useCallback(
     (node) => {
       if (!hasMoreCsv) return;
@@ -227,15 +226,19 @@ const DashShelter = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 w-full max-w-screen-xl">
           {allShelters.map((shelter, index) => {
             const isLast = index === allShelters.length - 1 && shelter.source === "csv";
+            const shelterKey = shelter._id || shelter.id || index;
+            const shelterLink =
+              shelter.source === "csv" && shelter.id
+                ? `/shelter/csv-${shelter.id}`
+                : `/shelter/${shelter._id}`;
+
             return (
               <div
-                key={`${shelter._id || shelter.id || index}`}
+                key={shelterKey}
                 ref={isLast ? lastShelterRef : null}
                 className="bg-white text-black rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
               >
-                <Link
-                  to={`/shelter/${shelter.source === "csv" ? `csv/${shelter.id}` : shelter._id}`}
-                >
+                <Link to={shelterLink}>
                   <img
                     src={
                       shelter.photos?.[0] ||

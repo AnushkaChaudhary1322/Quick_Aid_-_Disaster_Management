@@ -138,8 +138,6 @@ export const register = async (req, res, next) => {
       profilePicture:
         req.body.profilePicture ||
         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-      
-      // ✅ Ensure volunteers start with 0 points
       points: 0,  
     });
 
@@ -161,7 +159,7 @@ export const register = async (req, res, next) => {
   }
 };
 
-// ✅ ADD BACK the login function
+// ADD BACK the login function
 export const login = async (req, res, next) => {
   try {
     const { username, password } = req.body;

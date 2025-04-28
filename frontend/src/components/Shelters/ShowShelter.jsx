@@ -178,7 +178,6 @@
 
 // export default ShowShelter;
 
-// ShowShelter.jsx
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -186,14 +185,14 @@ import { BASE_URL } from "../api/apiservice";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
 const ShowShelter = () => {
-  const { shelterId } = useParams(); // ✅ Use correct param name
+  const { shelterId } = useParams(); 
   const [shelter, setShelter] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchShelterDetails = async () => {
       try {
-        // Determine if it's a CSV-based shelter by checking the ID format
+        // if it is a CSV-based shelter by checking the ID format
         const isCsv = shelterId.startsWith("csv-");
         const cleanId = isCsv ? shelterId.replace("csv-", "") : shelterId;
 
@@ -203,7 +202,7 @@ const ShowShelter = () => {
 
         const res = await fetch(endpoint);
         const data = await res.json();
-        setShelter({ ...data, isCsv }); // include isCsv for later use
+        setShelter({ ...data, isCsv });
       } catch (error) {
         console.error("Error fetching shelter details:", error);
       } finally {
@@ -228,9 +227,9 @@ const ShowShelter = () => {
         <img
           src={
             shelter.isCsv
-              ? "https://via.placeholder.com/600x300.png?text=Shelter"
+              ? "https://i.pinimg.com/736x/35/f5/35/35f5351d4931bf8cbce805957d03c186.jpg"
               : shelter.photos?.[0] ||
-                "https://via.placeholder.com/600x300.png?text=Shelter"
+                "https://i.pinimg.com/736x/35/f5/35/35f5351d4931bf8cbce805957d03c186.jpg"
           }
           alt="Shelter"
           className="w-full h-64 object-cover"
