@@ -79,7 +79,6 @@
 
 // const PORT = process.env.PORT || 3000;
 // server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -102,10 +101,6 @@ import razorpayRoutes from "./routes/razorpayRoute.js";
 
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-
-// ⬇️ New imports for shelter CSV preload
-import { loadSheltersFromCSV } from "./utils/loadSheltersFromCSV.js";
-import Shelter from "./models/Shelter.js";
 
 dotenvConfig();
 
@@ -153,26 +148,17 @@ app.use("/api/hospital", hospitalRoutes);
 app.use("/api/money-donations", moneyDonationRoutes);
 app.use("/api/razorpay", razorpayRoutes);
 
-// ⬇️ Preload CSV if MongoDB is empty
-const preloadSheltersFromCSV = async () => {
-  const existingCount = await Shelter.countDocuments();
-  if (existingCount === 0) {
-    const shelters = await loadSheltersFromCSV();
-    await Shelter.insertMany(shelters);
-    console.log(`✅ ${shelters.length} shelters loaded from CSV into MongoDB`);
-  } else {
-    console.log("✅ Shelter data already exists, skipping CSV preload");
-  }
-};
-
 // Connect to DB and start server
 connectDB()
-  .then(async () => {
-    await preloadSheltersFromCSV(); // Load shelters from CSV if DB is empty
+  .then(() => {
     const PORT = process.env.PORT || 3000;
-    server.listen(PORT, () => console.log(`🚀 Server started on port ${PORT}`));
+    server.listen(PORT, () =>
+      console.log(`🚀 Server started on http://localhost:${PORT}`)
+    );
   })
-  .catch((err) => console.error("❌ DB Connection Error:", err));
+  .catch((err) => {
+    console.error("❌ DB Connection Error:", err);
+  });
 
 // WebSocket connection
 io.on("connection", (socket) => {

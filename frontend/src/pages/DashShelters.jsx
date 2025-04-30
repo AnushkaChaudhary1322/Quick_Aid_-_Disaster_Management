@@ -1,111 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import { MdSearch } from "react-icons/md";
-// import { TextInput, Card, Button } from "flowbite-react";
-// import { useSelector } from "react-redux";
-// import { BASE_URL } from "../api/apiservice";
-// import { Link } from "react-router-dom";
-
-// const DashShelters = () => {
-//   const { currentUser } = useSelector((state) => state.user);
-//   const [shelters, setShelters] = useState([]);
-//   const [searchLocation, setSearchLocation] = useState("");
-
-//   useEffect(() => {
-//     fetchShelters();
-//   }, []);
-
-//   const fetchShelters = async () => {
-//     try {
-//       const res = await fetch(`${BASE_URL}/api/shelter/`);
-//       if (res.ok) {
-//         const data = await res.json();
-//         setShelters(data);
-//       } else {
-//         console.error("Failed to fetch shelters:", res.statusText);
-//       }
-//     } catch (error) {
-//       console.error("Error fetching shelters:", error.message);
-//     }
-//   };
-
-//   useEffect(() => {
-//     if (searchLocation.trim() !== "") {
-//       fetchSheltersByLocation(searchLocation);
-//     } else {
-//       fetchShelters();
-//     }
-//   }, [searchLocation]);
-
-//   const fetchSheltersByLocation = async (location) => {
-//     try {
-//       const res = await fetch(`${BASE_URL}/api/shelter/location/${location}`);
-//       if (res.ok) {
-//         const data = await res.json();
-//         setShelters(data);
-//       } else {
-//         console.error("Failed to fetch shelters by location:", res.statusText);
-//       }
-//     } catch (error) {
-//       console.error("Error fetching shelters by location:", error.message);
-//     }
-//   };
-
-//   const handleSearch = () => {
-//     fetchSheltersByLocation(searchLocation);
-//   };
-
-//   return (
-//     <div className="flex flex-col justify-center items-center">
-//       <h1 className="text-3xl font-extrabold text-gray-900 mt-8">Shelters</h1>
-//       <p className="italic text-lg text-gray-700 mb-8">
-//         "In the face of disaster, recovery begins with shelter and hope."
-//       </p>
-//       <div className="flex items-center">
-//         <div className="relative w-full max-w-lg">
-//           <TextInput
-//             className="w-full pl-10"
-//             type="text"
-//             placeholder="Search Shelters..."
-//             value={searchLocation}
-//             onChange={(e) => setSearchLocation(e.target.value)}
-//           />
-//           <div className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
-//             <MdSearch className="text-gray-400" onClick={handleSearch} />
-//           </div>
-//         </div>
-//         {currentUser.user.role === "admin" && (
-//           <Link to="/shelter">
-//             <Button className="ml-2"> Add</Button>
-//           </Link>
-//         )}
-//       </div>
-//       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 ml-4">
-//         {shelters.map((shelter) => (
-//           <div className="max-w-xs" key={shelter._id}>
-//             <Link to={`/shelter/${shelter._id}`}>
-//               <Card className="h-full">
-//                 <img
-//                   src={shelter.photos[0]}
-//                   alt={shelter.name}
-//                   className="w-full h-48 object-cover"
-//                 />
-//                 <div className="p-4">
-//                   <h5 className="text-xl font-bold tracking-tight text-gray-900">
-//                     {shelter.name}
-//                   </h5>
-//                   <p className="text-sm text-gray-600">{shelter.location}</p>
-//                 </div>
-//               </Card>
-//             </Link>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default DashShelters;
-
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -134,7 +26,7 @@ const DashShelter = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/shelter/combined?page=${page}&limit=10`);
       const allData = response.data?.data || [];
-      const newCsvShelters = allData.filter((shelter) => !shelter._id);
+      const newCsvShelters = allData.filter((shelter) => !shelter._id && shelter.accessId); // ✅ Ensure accessId exists
 
       if (newCsvShelters.length === 0) {
         setHasMoreCsv(false);
@@ -147,14 +39,14 @@ const DashShelter = () => {
     }
   };
 
-  // Search shelters (both MongoDB + CSV) using /combined endpoint
+  // Search shelters by location (both MongoDB + CSV)
   const fetchSheltersByLocation = async (location) => {
     try {
       const response = await axios.get(`${BASE_URL}/api/shelter/combined?location=${location}`);
       const allData = response.data?.data || [];
 
       const mongoData = allData.filter((shelter) => shelter._id);
-      const csvData = allData.filter((shelter) => !shelter._id);
+      const csvData = allData.filter((shelter) => !shelter._id && shelter.accessId); // ✅ Only valid CSV shelters
 
       setShelters(mongoData);
       setCsvShelters(csvData);
@@ -170,7 +62,7 @@ const DashShelter = () => {
     fetchCsvShelters(1);
   }, []);
 
-  // Handle search
+  // Handle search input
   useEffect(() => {
     if (searchLocation.trim() !== "") {
       fetchSheltersByLocation(searchLocation);
@@ -203,6 +95,7 @@ const DashShelter = () => {
     setSearchLocation(e.target.value);
   };
 
+  // Merge MongoDB and CSV shelters
   const allShelters = [
     ...shelters.map((shelter) => ({ ...shelter, source: "mongodb" })),
     ...csvShelters.map((shelter) => ({ ...shelter, source: "csv" })),
@@ -221,15 +114,17 @@ const DashShelter = () => {
       </div>
 
       {allShelters.length === 0 ? (
-        <p className="text-lg mt-10">🔍 No shelters found...</p>
+        <p className="text-lg mt-10">No shelters found...</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 w-full max-w-screen-xl">
           {allShelters.map((shelter, index) => {
+            if (shelter.source === "csv" && !shelter.accessId) return null; 
+
             const isLast = index === allShelters.length - 1 && shelter.source === "csv";
-            const shelterKey = shelter._id || shelter.id || index;
+            const shelterKey = shelter._id || shelter.accessId || index;
             const shelterLink =
-              shelter.source === "csv" && shelter.id
-                ? `/shelter/csv-${shelter.id}`
+              shelter.source === "csv"
+                ? `/shelter/csv-${shelter.accessId}`
                 : `/shelter/${shelter._id}`;
 
             return (
@@ -242,17 +137,20 @@ const DashShelter = () => {
                   <img
                     src={
                       shelter.photos?.[0] ||
-                      "https://i.pinimg.com/736x/1d/8e/a2/1d8ea29930228f56fb6baabf12f7ff71.jpg"
+                      "https://i.pinimg.com/736x/5e/38/e9/5e38e9534dd87fce952231a9f791335d.jpg"
                     }
                     alt={shelter.name || "Unnamed Shelter"}
                     className="w-full h-48 object-cover"
-                    onError={(e) =>
-                      (e.target.src =
-                        "https://i.pinimg.com/736x/35/f5/35/35f5351d4931bf8cbce805957d03c186.jpg")
-                    }
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://i.pinimg.com/736x/5e/38/e9/5e38e9534dd87fce952231a9f791335d.jpg";
+                    }}
                   />
                   <div className="p-4">
-                    <h2 className="font-bold text-xl">{shelter.name || "Unnamed Shelter"}</h2>
+                    <h2 className="font-bold text-xl">
+                      {shelter.name || "Unnamed Shelter"}
+                    </h2>
                     <p className="text-sm text-gray-600">
                       {shelter.location || "Unknown location"}
                     </p>

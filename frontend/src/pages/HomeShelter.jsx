@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../api/apiservice";
 import { FaShare, FaArrowLeft } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
@@ -7,19 +7,18 @@ import "react-toastify/dist/ReactToastify.css";
 
 const HomeShelter = () => {
   const { shelterId } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
 
   const [shelterData, setShelterData] = useState(null);
   const [error, setError] = useState(null);
 
-  const isCsv = location.pathname.includes("/csv/");
+  const isCsv = shelterId.startsWith("csv-");
 
   useEffect(() => {
     const fetchShelterData = async () => {
       try {
         const endpoint = isCsv
-          ? `${BASE_URL}/api/shelter/csv/${shelterId}`
+          ? `${BASE_URL}/api/shelter/csv/${shelterId.replace("csv-", "")}`
           : `${BASE_URL}/api/shelter/${shelterId}`;
         const res = await fetch(endpoint);
         if (res.ok) {
@@ -37,9 +36,7 @@ const HomeShelter = () => {
   }, [shelterId, isCsv]);
 
   const shareShelter = () => {
-    const deepLink = `${window.location.origin}/shelter/${
-      isCsv ? "csv/" : ""
-    }${shelterId}`;
+    const deepLink = `${window.location.origin}/shelters/view/${shelterId}`;
     if (navigator.share) {
       navigator.share({
         title: "Check out this shelter",
@@ -82,78 +79,59 @@ const HomeShelter = () => {
         {shelterData ? (
           <div className="rounded-lg shadow-md p-8 relative">
             <h1 className="text-3xl font-semibold mb-6 text-center text-gray-800">
-              {shelterData.name}
+              {shelterData.name || "Shelter Details"}
             </h1>
 
-            {!isCsv && shelterData.photos?.length > 0 ? (
-              <div className="flex flex-wrap items-start mb-8">
-                <div className="w-full md:w-1/2 mb-4 md:mb-0">
-                  <img
-                    src={shelterData.photos[0]}
-                    alt="Main Photo"
-                    className="w-full h-auto rounded-lg shadow-lg"
-                  />
-                </div>
-                <div className="flex flex-wrap w-full md:w-1/2 md:pl-4">
-                  {shelterData.photos.slice(1, 5).map((photo, index) => (
-                    <div
-                      key={index}
-                      className="w-1/2 mb-4 p-1 transition-transform transform hover:scale-105"
-                    >
-                      <img
-                        src={photo}
-                        alt={`Photo ${index + 1}`}
-                        className="w-full h-auto rounded-lg shadow-lg"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="mb-6">
+            <div className="flex flex-col md:flex-row items-start mb-8 gap-6">
+              <div className="md:w-1/3 w-full">
                 <img
-                  src="https://via.placeholder.com/600x300.png?text=No+Image+Available"
-                  alt="No Shelter Preview"
+                  src={
+                    !isCsv && shelterData.photos?.length > 0
+                      ? shelterData.photos[0]
+                      : "https://i.pinimg.com/736x/5e/38/e9/5e38e9534dd87fce952231a9f791335d.jpg"
+                  }
+                  alt="Shelter"
                   className="w-full h-auto rounded-lg shadow-md"
                 />
               </div>
-            )}
 
-            <div className="text-gray-700 mb-6">
-              <p className="mb-4">
-                <span className="font-semibold">Location:</span>{" "}
-                {shelterData.location || "Not specified"}
-              </p>
-              <p className="mb-4">
-                <span className="font-semibold">Description:</span>{" "}
-                {shelterData.description || "No description available."}
-              </p>
-            </div>
-
-            <div className="border-t border-gray-300 pt-6">
-              {shelterData.contact ? (
-                <p className="text-gray-700 mb-2">
-                  <span className="font-semibold">Contact:</span>{" "}
-                  {shelterData.contact.email}, {shelterData.contact.phone}
+              <div className="md:w-2/3 w-full text-gray-700">
+                <p className="mb-4">
+                  <span className="font-semibold">Location:</span>{" "}
+                  {isCsv
+                    ? shelterData.city || "Not specified"
+                    : shelterData.location || "Not specified"}
                 </p>
-              ) : (
-                <>
-                  <p className="text-gray-700 mb-2">
-                    <span className="font-semibold">Contact:</span>{" "}
-                    {shelterData.email || "Not available"},{" "}
-                    {shelterData.phone || "Not available"}
+                <p className="mb-4">
+                  <span className="font-semibold">Description:</span>{" "}
+                  {isCsv
+                    ? shelterData.hotel_description ||
+                    "No description available."
+                    : shelterData.description || "No description available."}
+                </p>
+                <p className="mb-4">
+                  <span className="font-semibold">Contact:</span>{" "}
+                  property_name@gmail.com, 9876543210
+                </p>
+                <p className="mb-4">
+                  <span className="font-semibold">Capacity:</span>{" "}
+                  {isCsv
+                    ? shelterData.room_count
+                      ? Number(shelterData.room_count) * 10
+                      : "Not specified"
+                    : shelterData.capacity || "Not specified"}
+                </p>
+                <p className="mb-4">
+                  <span className="font-semibold">Availability:</span>{" "}
+                  {isCsv ? "Available" : shelterData.availability ? "Available" : "Unavailable"}
+                </p>
+                {isCsv && (
+                  <p className="mb-4">
+                    <span className="font-semibold">Address:</span>{" "}
+                    {shelterData.address || "Not available"}
                   </p>
-                </>
-              )}
-
-              <p className="text-gray-700 mb-2">
-                <span className="font-semibold">Capacity:</span>{" "}
-                {shelterData.capacity || "Not specified"}
-              </p>
-              <p className="text-gray-700">
-                <span className="font-semibold">Availability:</span>{" "}
-                {shelterData.availability ? "Available" : "Unavailable"}
-              </p>
+                )}
+              </div>
             </div>
 
             <div className="mt-8">
